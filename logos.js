@@ -2,7 +2,7 @@ const teamLogos = {
     "ATA": "loghi/italy_atalanta_3000x3000.football-logos.cc.png",
     "BOL": "loghi/italy_bologna_3000x3000.football-logos.cc.png",
     "CAG": "loghi/italy_cagliari_3000x3000.football-logos.cc.png",
-    "COM": "loghi/italy_como-1906_3000x3000.football-logos.cc.png",
+    "COM": "loghi/italy_como-1907_3000x3000.football-logos.cc.png",
     "FIO": "loghi/italy_fiorentina_3000x3000.football-logos.cc.png",
     "FRO": "loghi/italy_frosinone_3000x3000.football-logos.cc.png",
     "GEN": "loghi/italy_genoa_3000x3000.football-logos.cc.png",
