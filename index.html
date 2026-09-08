@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abbinamento Portieri Fantacalcio</title>
+    <style>
+        :root {
+            --bg-color: #0f0c1b;
+            --card-bg: #1a1528;
+            --accent: #00e676;
+            --text: #ffffff;
+            --subtext: #a09cb0;
+            --border: #2a2438;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        /* Sezione Selettori */
+        .selectors-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        select {
+            background-color: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        /* Card Risultati */
+        .score-card {
+            background: linear-gradient(145deg, #18221c, #131a18);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 230, 118, 0.15);
+        }
+
+        .circle-score {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 5px solid var(--accent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .score-val { font-size: 1.8rem; color: var(--accent); line-height: 1; }
+        .score-max { font-size: 0.8rem; color: var(--subtext); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-box {
+            background-color: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .stat-num { font-size: 1.2rem; font-weight: bold; }
+        .stat-num.easy { color: #00e676; }
+        .stat-num.medium { color: #ffb300; }
+        .stat-num.hard { color: #ff5252; }
+        .stat-label { font-size: 0.75rem; color: var(--subtext); }
+
+        /* Matrice Calendario */
+        .matrix-container {
+            overflow-x: auto;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: 80px repeat(38, 40px);
+            gap: 5px;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .cell {
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: bold;
+            background-color: #231d33;
+        }
+
+        .cell.header { background-color: transparent; color: var(--subtext); }
+        .cell.team-name { justify-content: flex-start; padding-left: 5px; background: none; }
+        .cell.best { border: 2px solid var(--accent); }
+        .cell.easy-bg { background-color: #1b3a2b; color: #00e676; }
+        .cell.medium-bg { background-color: #3a311b; color: #ffb300; }
+        .cell.hard-bg { background-color: #3a1b1b; color: #ff5252; }
+
+        /* Sezione Salvataggio */
+        .save-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .saved-list {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .saved-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .saved-item:last-child { border-bottom: none; }
+        .btn-delete { background-color: #ff5252; color: #fff; padding: 5px 10px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1> Griglia Portieri Fantacalcio</h1>
+
+    <!-- Selezione Squadre -->
+    <div class="selectors-grid">
+        <select id="team1" onchange="calculate()"></select>
+        <select id="team2" onchange="calculate()"></select>
+        <select id="team3" onchange="calculate()"></select>
+    </div>
+
+    <!-- Risultati / Score -->
+    <div class="score-card">
+        <div class="circle-score">
+            <span class="score-val" id="scoreVal">0</span>
+            <span class="score-max">/100</span>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-num easy" id="easyCount">0</div>
+                <div class="stat-label">Facili</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num medium" id="mediumCount">0</div>
+                <div class="stat-label">Medie</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num hard" id="hardCount">0</div>
+                <div class="stat-label">Difficili</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Matrice Calendario -->
+    <div class="matrix-container">
+        <div class="matrix" id="matrix"></div>
+    </div>
+
+    <!-- Salvataggio -->
+    <div class="save-section">
+        <input type="text" id="comboName" placeholder="Nome combinazione (es. Trio Toro-Udi-Bol)">
+        <button onclick="saveCombo()">Salva</button>
+    </div>
+
+    <div class="saved-list">
+        <h3>Combinazioni Salvate</h3>
+        <div id="savedContainer">Nessuna combinazione salvata.</div>
+    </div>
+</div>
+
+<script>
+    // Dati dimostrativi della difficoltà (3=Facile, 2=Media, 1=Difficile) + Casa/Fuori
+    // In un file reale qui va la lista delle 38 giornate per le 20 squadre
+    const teams = ["TOR", "UDI", "BOL", "INT", "JUV", "MIL", "NAP", "ROM", "LAZ", "ATA"];
+    
+    // Generazione di un calendario di test (con dati casuali realistici)
+    const schedule = {};
+    teams.forEach(team => {
+        schedule[team] = [];
+        for(let g=1; g<=38; g++) {
+            const isHome = Math.random() > 0.5;
+            // Valore da 1 a 3
+            const diff = Math.floor(Math.random() * 3) + 1; 
+            schedule[team].push({ home: isHome, diff: diff });
+        }
+    });
+
+    // Inizializza Menu a tendina
+    function initSelectors() {
+        const selects = [document.getElementById('team1'), document.getElementById('team2'), document.getElementById('team3')];
+        selects.forEach((sel, idx) => {
+            sel.innerHTML = `<option value="">-- Squadra ${idx+1} --</option>`;
+            teams.forEach(t => sel.innerHTML += `<option value="${t}">${t}</option>`);
+        });
+        selects[0].value = "TOR";
+        selects[1].value = "UDI";
+        selects[2].value = "BOL";
+    }
+
+    function calculate() {
+        const t1 = document.getElementById('team1').value;
+        const t2 = document.getElementById('team2').value;
+        const t3 = document.getElementById('team3').value;
+        const selected = [t1, t2, t3].filter(t => t !== "");
+
+        if(selected.length === 0) return;
+
+        let totalScore = 0;
+        let easy = 0, medium = 0, hard = 0;
+        let bestPicks = []; // Memorizza la squadra migliore per giornata
+
+        for(let g=0; g<38; g++) {
+            let bestTeam = selected[0];
+            let bestVal = -1;
+
+            selected.forEach(t => {
+                const match = schedule[t][g];
+                // Calcolo Punteggio: Difficoltà match + Bonus Casa
+                let val = match.diff + (match.home ? 0.5 : 0);
+                if(val > bestVal) {
+                    bestVal = val;
+                    bestTeam = t;
+                }
+            });
+
+            bestPicks.push({ g: g+1, team: bestTeam, match: schedule[bestTeam][g] });
+            
+            // Conteggi Difficoltà
+            const d = schedule[bestTeam][g].diff;
+            if(d === 3) easy++;
+            else if(d === 2) medium++;
+            else hard++;
+
+            totalScore += bestVal;
+        }
+
+        // Normalizza lo score su 100
+        const finalScore = Math.round((totalScore / (38 * 3.5)) * 100);
+
+        // Aggiorna UI UI
+        document.getElementById('scoreVal').innerText = finalScore;
+        document.getElementById('easyCount').innerText = easy;
+        document.getElementById('mediumCount').innerText = medium;
+        document.getElementById('hardCount').innerText = hard;
+
+        renderMatrix(selected, bestPicks);
+    }
+
+    function renderMatrix(selectedTeams, bestPicks) {
+        const matrix = document.getElementById('matrix');
+        matrix.innerHTML = '';
+
+        // Header Giornate
+        matrix.innerHTML += `<div class="cell header">Sq / G</div>`;
+        for(let g=1; g<=38; g++) {
+            matrix.innerHTML += `<div class="cell header">${g}</div>`;
+        }
+
+        // Righe Squadre
+        selectedTeams.forEach(team => {
+            matrix.innerHTML += `<div class="cell team-name">${team}</div>`;
+            for(let g=0; g<38; g++) {
+                const match = schedule[team][g];
+                const isBest = bestPicks[g].team === team;
+                
+                let diffClass = match.diff === 3 ? 'easy-bg' : (match.diff === 2 ? 'medium-bg' : 'hard-bg');
+                let bestClass = isBest ? 'best' : '';
+                let label = match.home ? 'C' : 'F';
+
+                matrix.innerHTML += `<div class="cell ${diffClass} ${bestClass}">${label}</div>`;
+            }
+        });
+    }
+
+    // Gestione Salvataggi (LocalStorage)
+    function saveCombo() {
+        const name = document.getElementById('comboName').value || "Combinazione senza nome";
+        const t1 = document.getElementById('team1').value;
+        const t2 = document.getElementById('team2').value;
+        const t3 = document.getElementById('team3').value;
+        const score = document.getElementById('scoreVal').innerText;
+
+        const saved = JSON.parse(localStorage.getItem('fanta_combos') || '[]');
+        saved.push({ name, t1, t2, t3, score });
+        localStorage.setItem('fanta_combos', JSON.stringify(saved));
+        
+        document.getElementById('comboName').value = '';
+        loadSaved();
+    }
+
+    function loadSaved() {
+        const saved = JSON.parse(localStorage.getItem('fanta_combos') || '[]');
+        const container = document.getElementById('savedContainer');
+        if(saved.length === 0) {
+            container.innerHTML = "Nessuna combinazione salvata.";
+            return;
+        }
+
+        container.innerHTML = saved.map((item, idx) => `
+            <div class="saved-item">
+                <div>
+                    <strong>${item.name}</strong> (${item.t1} - ${item.t2} - ${item.t3})
+                    <span style="color:var(--accent); margin-left:10px;">${item.score}/100</span>
+                </div>
+                <button class="btn-delete" onclick="deleteCombo(${idx})">Elimina</button>
+            </div>
+        `).join('');
+    }
+
+    function deleteCombo(idx) {
+        const saved = JSON.parse(localStorage.getItem('fanta_combos') || '[]');
+        saved.splice(idx, 1);
+        localStorage.setItem('fanta_combos', JSON.stringify(saved));
+        loadSaved();
+    }
+
+    // Avvio
+    initSelectors();
+    calculate();
+    loadSaved();
+</script>
+</body>
+</html>
