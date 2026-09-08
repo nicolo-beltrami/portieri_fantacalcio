@@ -26,7 +26,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
         }
 
@@ -115,20 +115,21 @@
 
         .matrix {
             display: grid;
-            grid-template-columns: 80px repeat(38, 40px);
+            grid-template-columns: 70px repeat(38, 48px);
             gap: 5px;
             align-items: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .cell {
-            height: 35px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 6px;
             font-weight: bold;
             background-color: #231d33;
+            text-align: center;
         }
 
         .cell.header { background-color: transparent; color: var(--subtext); }
@@ -186,7 +187,7 @@
 <body>
 
 <div class="container">
-    <h1> Griglia Portieri Fantacalcio</h1>
+    <h1>Griglia Portieri Fantacalcio</h1>
 
     <!-- Selezione Squadre -->
     <div class="selectors-grid">
@@ -224,7 +225,7 @@
 
     <!-- Salvataggio -->
     <div class="save-section">
-        <input type="text" id="comboName" placeholder="Nome combinazione (es. Trio Toro-Udi-Bol)">
+        <input type="text" id="comboName" placeholder="Nome combinazione (es. Trio Juve-Roma-Torino)">
         <button onclick="saveCombo()">Salva</button>
     </div>
 
@@ -235,32 +236,62 @@
 </div>
 
 <script>
-    // Dati dimostrativi della difficoltà (3=Facile, 2=Media, 1=Difficile) + Casa/Fuori
-    // In un file reale qui va la lista delle 38 giornate per le 20 squadre
-    const teams = ["TOR", "UDI", "BOL", "INT", "JUV", "MIL", "NAP", "ROM", "LAZ", "ATA"];
+    const teams = ["ATA", "BOL", "CAG", "COM", "EMP", "FIO", "GEN", "INT", "JUV", "LAZ", "LEC", "MIL", "MON", "NAP", "PAR", "ROM", "TOR", "UDI", "VER", "VEN"];
     
-    // Generazione di un calendario di test (con dati casuali realistici)
+    // Mappa delle fasce di forza
+    const teamTiers = {
+        "INT": 1, "JUV": 1, "MIL": 1, "NAP": 1, "ATA": 1,
+        "ROM": 2, "LAZ": 2, "BOL": 2, "FIO": 2, "TOR": 2,
+        "CAG": 3, "COM": 3, "EMP": 3, "GEN": 3, "LEC": 3, 
+        "MON": 3, "PAR": 3, "UDI": 3, "VER": 3, "VEN": 3
+    };
+
+    // Algoritmo di calcolo difficoltà
+    function getMatchDifficulty(myTeam, opponent, isHome) {
+        const myTier = teamTiers[myTeam] || 3;
+        const oppTier = teamTiers[opponent] || 3;
+
+        // 1. Stesso livello (es. Juve-Roma, Inter-Napoli, o Piccola vs Piccola)
+        if (myTier === oppTier) {
+            return 2; // Partita MEDIA
+        }
+
+        // 2. Squadra INFERIORE (es. Top vs Medio-Bassa)
+        if (myTier < oppTier) {
+            return 3; // Partita FACILE
+        }
+
+        // 3. Squadra SUPERIORE (es. Piccola vs Top)
+        if (myTier > oppTier) {
+            return isHome ? 2 : 1; // MEDIA se in casa, DIFFICILE se fuori
+        }
+
+        return 2;
+    }
+
+    // Struttura Calendario Generato
     const schedule = {};
     teams.forEach(team => {
         schedule[team] = [];
         for(let g=1; g<=38; g++) {
-            const isHome = Math.random() > 0.5;
-            // Valore da 1 a 3
-            const diff = Math.floor(Math.random() * 3) + 1; 
-            schedule[team].push({ home: isHome, diff: diff });
+            const oppIndex = (teams.indexOf(team) + g) % teams.length;
+            const opponent = teams[oppIndex] === team ? teams[(oppIndex + 1) % teams.length] : teams[oppIndex];
+            const isHome = (g + teams.indexOf(team)) % 2 === 0;
+            const diff = getMatchDifficulty(team, opponent, isHome);
+            
+            schedule[team].push({ opponent, home: isHome, diff: diff });
         }
     });
 
-    // Inizializza Menu a tendina
     function initSelectors() {
         const selects = [document.getElementById('team1'), document.getElementById('team2'), document.getElementById('team3')];
         selects.forEach((sel, idx) => {
             sel.innerHTML = `<option value="">-- Squadra ${idx+1} --</option>`;
             teams.forEach(t => sel.innerHTML += `<option value="${t}">${t}</option>`);
         });
-        selects[0].value = "TOR";
-        selects[1].value = "UDI";
-        selects[2].value = "BOL";
+        selects[0].value = "JUV";
+        selects[1].value = "ROM";
+        selects[2].value = "";
     }
 
     function calculate() {
@@ -273,7 +304,7 @@
 
         let totalScore = 0;
         let easy = 0, medium = 0, hard = 0;
-        let bestPicks = []; // Memorizza la squadra migliore per giornata
+        let bestPicks = [];
 
         for(let g=0; g<38; g++) {
             let bestTeam = selected[0];
@@ -281,7 +312,7 @@
 
             selected.forEach(t => {
                 const match = schedule[t][g];
-                // Calcolo Punteggio: Difficoltà match + Bonus Casa
+                // Punteggio: Difficoltà + Bonus casa
                 let val = match.diff + (match.home ? 0.5 : 0);
                 if(val > bestVal) {
                     bestVal = val;
@@ -291,7 +322,6 @@
 
             bestPicks.push({ g: g+1, team: bestTeam, match: schedule[bestTeam][g] });
             
-            // Conteggi Difficoltà
             const d = schedule[bestTeam][g].diff;
             if(d === 3) easy++;
             else if(d === 2) medium++;
@@ -300,10 +330,9 @@
             totalScore += bestVal;
         }
 
-        // Normalizza lo score su 100
-        const finalScore = Math.round((totalScore / (38 * 3.5)) * 100);
+        // Calcolo Score finale in percentuale
+        const finalScore = Math.min(100, Math.round((totalScore / (38 * 3.5)) * 100));
 
-        // Aggiorna UI UI
         document.getElementById('scoreVal').innerText = finalScore;
         document.getElementById('easyCount').innerText = easy;
         document.getElementById('mediumCount').innerText = medium;
@@ -316,13 +345,11 @@
         const matrix = document.getElementById('matrix');
         matrix.innerHTML = '';
 
-        // Header Giornate
         matrix.innerHTML += `<div class="cell header">Sq / G</div>`;
         for(let g=1; g<=38; g++) {
             matrix.innerHTML += `<div class="cell header">${g}</div>`;
         }
 
-        // Righe Squadre
         selectedTeams.forEach(team => {
             matrix.innerHTML += `<div class="cell team-name">${team}</div>`;
             for(let g=0; g<38; g++) {
@@ -331,14 +358,13 @@
                 
                 let diffClass = match.diff === 3 ? 'easy-bg' : (match.diff === 2 ? 'medium-bg' : 'hard-bg');
                 let bestClass = isBest ? 'best' : '';
-                let label = match.home ? 'C' : 'F';
+                let label = (match.home ? 'C-' : 'F-') + match.opponent;
 
                 matrix.innerHTML += `<div class="cell ${diffClass} ${bestClass}">${label}</div>`;
             }
         });
     }
 
-    // Gestione Salvataggi (LocalStorage)
     function saveCombo() {
         const name = document.getElementById('comboName').value || "Combinazione senza nome";
         const t1 = document.getElementById('team1').value;
@@ -365,7 +391,7 @@
         container.innerHTML = saved.map((item, idx) => `
             <div class="saved-item">
                 <div>
-                    <strong>${item.name}</strong> (${item.t1} - ${item.t2} - ${item.t3})
+                    <strong>${item.name}</strong> (${item.t1}${item.t2 ? ' - ' + item.t2 : ''}${item.t3 ? ' - ' + item.t3 : ''})
                     <span style="color:var(--accent); margin-left:10px;">${item.score}/100</span>
                 </div>
                 <button class="btn-delete" onclick="deleteCombo(${idx})">Elimina</button>
@@ -380,7 +406,6 @@
         loadSaved();
     }
 
-    // Avvio
     initSelectors();
     calculate();
     loadSaved();
