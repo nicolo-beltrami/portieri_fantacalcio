@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Griglia Portieri Pro 26/27</title>
+    <title>FantaHub Pro 26/27</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,6 +17,11 @@
             --easy: #00ff88;
             --medium: #ffb700;
             --hard: #ff3366;
+            
+            --role-p: #ffcc00;
+            --role-d: #00cc66;
+            --role-c: #0099ff;
+            --role-a: #ff3366;
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease; }
@@ -38,7 +43,42 @@
 
         .container { max-width: 1000px; width: 100%; }
 
-        .header-title { text-align: center; margin-bottom: 30px; }
+        /* TAB NAVIGATION */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.03);
+            padding: 6px;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--subtext);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 50%;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--accent);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .header-title { text-align: center; margin-bottom: 25px; }
         .header-title h1 {
             font-size: 2rem; font-weight: 900; margin: 0 0 8px 0;
             background: linear-gradient(135deg, #fff 30%, var(--subtext));
@@ -46,188 +86,201 @@
         }
         .header-title p { color: var(--subtext); margin: 0; font-size: 0.9rem; }
 
-        .selectors-grid {
+        /* CONTROLLI INFORMATI */
+        .filter-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px; margin-bottom: 25px;
+            grid-template-columns: 2fr 1fr 1.2fr;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        select {
+        @media (max-width: 700px) {
+            .filter-bar { grid-template-columns: 1fr; }
+        }
+
+        input[type="text"], select {
             appearance: none;
             background-color: var(--card-bg);
             backdrop-filter: blur(12px);
             color: var(--text);
             border: 1px solid var(--card-border);
-            padding: 14px 16px; border-radius: 12px;
-            font-size: 0.95rem; font-weight: 600; width: 100%; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 12px 16px; border-radius: 12px;
+            font-size: 0.95rem; font-weight: 600; width: 100%; outline: none;
         }
 
-        select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
 
-        .dashboard-card {
+        /* GRID INFORMATI */
+        .injured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .player-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
             border: 1px solid var(--card-border);
-            border-radius: 20px; padding: 25px;
-            display: grid; grid-template-columns: 180px 1fr;
-            gap: 20px; align-items: center; margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
+        .player-info { display: flex; align-items: center; gap: 12px; }
+
+        .role-badge {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 0.85rem; color: #000;
+            flex-shrink: 0;
+        }
+        .role-P { background: var(--role-p); }
+        .role-D { background: var(--role-d); }
+        .role-C { background: var(--role-c); }
+        .role-A { background: var(--role-a); color: #fff; }
+
+        .player-details { display: flex; flex-direction: column; }
+        .player-name { font-weight: 800; font-size: 1rem; color: #fff; }
+        .player-team { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--subtext); margin-top: 2px; }
+        .team-icon-sm { width: 16px; height: 16px; object-fit: contain; }
+
+        .return-badge {
+            text-align: right;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            padding: 6px 12px;
+            border-radius: 10px;
+        }
+        .return-label { font-size: 0.65rem; color: var(--subtext); text-transform: uppercase; font-weight: 700; }
+        .return-value { font-size: 0.9rem; font-weight: 800; color: var(--accent); }
+        .return-value.long { color: var(--hard); }
+        .return-value.medium { color: var(--medium); }
+
+        /* PORTIERI STYLES */
+        .selectors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .dashboard-card { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; display: grid; grid-template-columns: 180px 1fr; gap: 20px; align-items: center; margin-bottom: 25px; }
         @media (max-width: 600px) { .dashboard-card { grid-template-columns: 1fr; text-align: center; } }
-
-        .score-box {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-right: 1px solid var(--card-border); padding-right: 20px;
-        }
-
+        .score-box { display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--card-border); padding-right: 20px; }
         @media (max-width: 600px) { .score-box { border-right: none; border-bottom: 1px solid var(--card-border); padding-right: 0; padding-bottom: 20px; } }
-
-        .circle-score {
-            width: 100px; height: 100px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
-            border: 4px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-
+        .circle-score { width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%); border: 4px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .score-val { font-size: 2.2rem; font-weight: 900; color: var(--accent); line-height: 1; }
         .score-max { font-size: 0.75rem; color: var(--subtext); margin-top: 4px; font-weight: 600; }
-
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border);
-            padding: 12px; border-radius: 12px; text-align: center;
-        }
-
+        .stat-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; text-align: center; }
         .stat-num { font-size: 1.5rem; font-weight: 900; margin-bottom: 2px; }
         .stat-num.easy { color: var(--easy); }
         .stat-num.medium { color: var(--medium); }
         .stat-num.hard { color: var(--hard); }
         .stat-label { font-size: 0.75rem; color: var(--subtext); text-transform: uppercase; font-weight: 700; }
-
-        .matrix-container {
-            background: var(--card-bg); backdrop-filter: blur(16px);
-            border-radius: 20px; padding: 20px; border: 1px solid var(--card-border);
-            margin-bottom: 25px; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .matrix {
-            display: grid;
-            grid-template-columns: 90px repeat(38, 62px);
-            gap: 6px; align-items: center;
-        }
-
-        .cell {
-            height: 46px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            border-radius: 8px; font-size: 0.7rem; font-weight: 700;
-            background: rgba(255, 255, 255, 0.03); border: 1px solid transparent;
-        }
-
+        .matrix-container { background: var(--card-bg); backdrop-filter: blur(16px); border-radius: 20px; padding: 20px; border: 1px solid var(--card-border); margin-bottom: 25px; overflow-x: auto; }
+        .matrix { display: grid; grid-template-columns: 90px repeat(38, 62px); gap: 6px; align-items: center; }
+        .cell { height: 46px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.7rem; font-weight: 700; background: rgba(255, 255, 255, 0.03); }
         .cell.header { background: transparent; color: var(--subtext); font-size: 0.7rem; text-transform: uppercase; }
         .cell.team-name { font-weight: 900; font-size: 0.85rem; color: #fff; background: rgba(255,255,255,0.05); gap: 3px; }
-
         .cell.easy-bg { background: rgba(0, 255, 136, 0.12); color: var(--easy); border-color: rgba(0, 255, 136, 0.2); }
         .cell.medium-bg { background: rgba(255, 183, 0, 0.12); color: var(--medium); border-color: rgba(255, 183, 0, 0.2); }
         .cell.hard-bg { background: rgba(255, 51, 102, 0.12); color: var(--hard); border-color: rgba(255, 51, 102, 0.2); }
-
-        .cell.best {
-            transform: scale(1.05); box-shadow: 0 0 12px rgba(255,255,255,0.2);
-            border: 2px solid #fff !important; z-index: 2;
-        }
-
+        .cell.best { transform: scale(1.05); border: 2px solid #fff !important; z-index: 2; }
         .cell .badge { font-size: 0.55rem; opacity: 0.7; margin-bottom: 1px; }
-
         .match-info { display: flex; align-items: center; gap: 4px; }
         .team-icon { width: 14px; height: 14px; object-fit: contain; }
         .header-icon { width: 18px; height: 18px; object-fit: contain; }
-
         .save-section { display: flex; gap: 12px; margin-bottom: 25px; }
-
-        input[type="text"] {
-            flex: 1; background: var(--card-bg); border: 1px solid var(--card-border);
-            color: #fff; padding: 14px 18px; border-radius: 12px; font-size: 0.95rem; outline: none;
-        }
-
-        button.btn-primary {
-            background: var(--accent); color: #000; border: none; padding: 0 25px;
-            border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer;
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
-
-        .saved-card {
-            background: var(--card-bg); backdrop-filter: blur(16px);
-            border-radius: 20px; padding: 20px; border: 1px solid var(--card-border);
-        }
-
+        button.btn-primary { background: var(--accent); color: #000; border: none; padding: 0 25px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; }
+        .saved-card { background: var(--card-bg); border-radius: 20px; padding: 20px; border: 1px solid var(--card-border); }
         .saved-card h3 { margin: 0 0 15px 0; font-size: 1.1rem; color: var(--subtext); }
-
-        .saved-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 16px; background: rgba(255,255,255,0.02);
-            border: 1px solid var(--card-border); border-radius: 10px; margin-bottom: 8px;
-        }
-
-        .btn-delete {
-            background: rgba(255, 51, 102, 0.15); color: var(--hard);
-            border: 1px solid rgba(255, 51, 102, 0.3); padding: 6px 12px;
-            border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer;
-        }
+        .saved-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 10px; margin-bottom: 8px; }
+        .btn-delete { background: rgba(255, 51, 102, 0.15); color: var(--hard); border: 1px solid rgba(255, 51, 102, 0.3); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header-title">
-        <h1>Griglia Portieri Pro</h1>
-        <p>Serie A 2026/2027 • Con Loghi Ufficiali</p>
+    
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('portieri')">Griglia Portieri</button>
+        <button class="tab-btn" onclick="switchTab('infortunati')">Report Infortunati</button>
     </div>
 
-    <div class="selectors-grid">
-        <select id="team1" onchange="calculate()"></select>
-        <select id="team2" onchange="calculate()"></select>
-        <select id="team3" onchange="calculate()"></select>
-    </div>
-
-    <div class="dashboard-card">
-        <div class="score-box">
-            <div class="circle-score"><span class="score-val" id="scoreVal">0</span></div>
-            <span class="score-max">INDICE DI COPPIA</span>
+    <!-- TAB 1: PORTIERI -->
+    <div id="tab-portieri" class="tab-content active">
+        <div class="header-title">
+            <h1>Griglia Portieri Pro</h1>
+            <p>Serie A 2026/2027 • Incroci Ottimali</p>
         </div>
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-num easy" id="easyCount">0</div>
-                <div class="stat-label">Facili</div>
+
+        <div class="selectors-grid">
+            <select id="team1" onchange="calculate()"></select>
+            <select id="team2" onchange="calculate()"></select>
+            <select id="team3" onchange="calculate()"></select>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="score-box">
+                <div class="circle-score"><span class="score-val" id="scoreVal">0</span></div>
+                <span class="score-max">INDICE DI COPPIA</span>
             </div>
-            <div class="stat-box">
-                <div class="stat-num medium" id="mediumCount">0</div>
-                <div class="stat-label">Medie</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-num easy" id="easyCount">0</div>
+                    <div class="stat-label">Facili</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num medium" id="mediumCount">0</div>
+                    <div class="stat-label">Medie</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num hard" id="hardCount">0</div>
+                    <div class="stat-label">Difficili</div>
+                </div>
             </div>
-            <div class="stat-box">
-                <div class="stat-num hard" id="hardCount">0</div>
-                <div class="stat-label">Difficili</div>
-            </div>
+        </div>
+
+        <div class="matrix-container">
+            <div class="matrix" id="matrix"></div>
+        </div>
+
+        <div class="save-section">
+            <input type="text" id="comboName" placeholder="Nome combinazione (es. Trio Juve-Torino-Monza)">
+            <button class="btn-primary" onclick="saveCombo()">Salva Trio</button>
+        </div>
+
+        <div class="saved-card">
+            <h3>Combinazioni Salvate</h3>
+            <div id="savedContainer">Nessuna combinazione salvata.</div>
         </div>
     </div>
 
-    <div class="matrix-container">
-        <div class="matrix" id="matrix"></div>
+    <!-- TAB 2: INFORMATI -->
+    <div id="tab-infortunati" class="tab-content">
+        <div class="header-title">
+            <h1>Lista Infortunati Asta</h1>
+            <p>Tempi di rientro e giornate previste</p>
+        </div>
+
+        <div class="filter-bar">
+            <input type="text" id="searchPlayer" placeholder="Cerca giocatore..." oninput="filterInjured()">
+            <select id="filterRole" onchange="filterInjured()">
+                <option value="">Tutti i Ruoli</option>
+                <option value="P">Portieri (P)</option>
+                <option value="D">Difensori (D)</option>
+                <option value="C">Centrocampisti (C)</option>
+                <option value="A">Attaccanti (A)</option>
+            </select>
+            <select id="filterTeam" onchange="filterInjured()">
+                <option value="">Tutte le Squadre</option>
+            </select>
+        </div>
+
+        <div class="injured-grid" id="injuredGrid"></div>
     </div>
 
-    <div class="save-section">
-        <input type="text" id="comboName" placeholder="Nome combinazione (es. Trio Juve-Torino-Monza)">
-        <button class="btn-primary" onclick="saveCombo()">Salva Trio</button>
-    </div>
-
-    <div class="saved-card">
-        <h3>Combinazioni Salvate</h3>
-        <div id="savedContainer">Nessuna combinazione salvata.</div>
-    </div>
 </div>
 
-<!-- Richiamo il file separato dei loghi -->
 <script src="logos.js"></script>
 
 <script>
@@ -280,6 +333,50 @@
         ["ATALANTA","LECCE"], ["FIORENTINA","MONZA"], ["FROSINONE","CAGLIARI"], ["GENOA","BOLOGNA"], ["INTER","LAZIO"], ["PARMA","JUVENTUS"], ["ROMA","COMO"], ["TORINO","NAPOLI"], ["UDINESE","SASSUOLO"], ["VENEZIA","MILAN"]
     ];
 
+    const injuredData = [
+        { name: "Hien", team: "ATA", role: "D", returnG: 6 },
+        { name: "Sulemana K.", team: "ATA", role: "C", returnG: 6 },
+        { name: "Orsolini", team: "BOL", role: "C", returnG: 6 },
+        { name: "Felici", team: "CAG", role: "A", returnG: 5 },
+        { name: "Idrissi", team: "CAG", role: "D", returnG: 6 },
+        { name: "Addai", team: "COM", role: "A", returnG: 6 },
+        { name: "Parisi", team: "FIO", role: "D", returnG: 10 },
+        { name: "Venturino", team: "GEN", role: "A", returnG: 4 },
+        { name: "Spence", team: "INT", role: "D", returnG: 5 },
+        { name: "Yildiz", team: "JUV", role: "A", returnG: 13 },
+        { name: "Thuram", team: "JUV", role: "C", returnG: 17 },
+        { name: "Locatelli", team: "JUV", role: "C", returnG: 17 },
+        { name: "Boga", team: "JUV", role: "A", returnG: 6 },
+        { name: "Cabal", team: "JUV", role: "D", returnG: 6 },
+        { name: "Patric", team: "LAZ", role: "D", returnG: 3 },
+        { name: "Cataldi", team: "LAZ", role: "C", returnG: 6 },
+        { name: "Marusic", team: "LAZ", role: "D", returnG: 4 },
+        { name: "Dele-Bashiru", team: "LAZ", role: "C", returnG: 4 },
+        { name: "Rovella", team: "LAZ", role: "C", returnG: 4 },
+        { name: "Geubbels", team: "LEC", role: "A", returnG: 4 },
+        { name: "Gabbia", team: "MIL", role: "D", returnG: 4 },
+        { name: "Pessina", team: "MON", role: "C", returnG: 9 },
+        { name: "Ciurria", team: "MON", role: "C", returnG: 4 },
+        { name: "Varela", team: "MON", role: "A", returnG: 5 },
+        { name: "Cutrone", team: "MON", role: "A", returnG: 4 },
+        { name: "Buongiorno", team: "NAP", role: "D", returnG: 12 },
+        { name: "McTominay", team: "NAP", role: "C", returnG: 6 },
+        { name: "Bernabé", team: "PAR", role: "C", returnG: 4 },
+        { name: "Diallo", team: "PAR", role: "A", returnG: 4 },
+        { name: "Nicolussi Caviglia", team: "PAR", role: "C", returnG: 12 },
+        { name: "Koné", team: "SAS", role: "C", returnG: 20 },
+        { name: "Volpato", team: "SAS", role: "A", returnG: 6 },
+        { name: "Casadei", team: "TOR", role: "C", returnG: 4 },
+        { name: "Coco", team: "TOR", role: "D", returnG: 4 },
+        { name: "Zanoli", team: "UDI", role: "D", returnG: 6 },
+        { name: "Palma", team: "UDI", role: "D", returnG: 6 },
+        { name: "Zaniolo", team: "UDI", role: "C", returnG: 6 },
+        { name: "Solet", team: "UDI", role: "D", returnG: 5 },
+        { name: "Basic", team: "VEN", role: "C", returnG: 4 },
+        { name: "Bella-Kotchap", team: "VEN", role: "D", returnG: 5 },
+        { name: "Adorante", team: "VEN", role: "A", returnG: 7 }
+    ];
+
     function normalize(name) { return name.substring(0,3).toUpperCase(); }
 
     const schedule = {};
@@ -302,6 +399,20 @@
         if (schedule[away]) schedule[away].push({ opponent: home, home: false, diff: getMatchDifficulty(away, home) });
     }
 
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        if(tab === 'portieri') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('tab-portieri').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('tab-infortunati').classList.add('active');
+            filterInjured();
+        }
+    }
+
     function initSelectors() {
         const selects = [document.getElementById('team1'), document.getElementById('team2'), document.getElementById('team3')];
         selects.forEach((sel, idx) => {
@@ -311,6 +422,9 @@
         selects[0].value = "JUV";
         selects[1].value = "TOR";
         selects[2].value = "";
+
+        const teamFilter = document.getElementById('filterTeam');
+        teams.forEach(t => teamFilter.innerHTML += `<option value="${t}">${t}</option>`);
     }
 
     function calculate() {
@@ -395,6 +509,59 @@
                         </div>
                     </div>`;
             }
+        });
+    }
+
+    function filterInjured() {
+        const search = document.getElementById('searchPlayer').value.toLowerCase();
+        const role = document.getElementById('filterRole').value;
+        const team = document.getElementById('filterTeam').value;
+
+        const filtered = injuredData.filter(p => {
+            const matchSearch = p.name.toLowerCase().includes(search);
+            const matchRole = role === "" || p.role === role;
+            const matchTeam = team === "" || p.team === team;
+            return matchSearch && matchRole && matchTeam;
+        });
+
+        renderInjured(filtered);
+    }
+
+    function renderInjured(list) {
+        const container = document.getElementById('injuredGrid');
+        container.innerHTML = '';
+
+        if(list.length === 0) {
+            container.innerHTML = `<div style="color:var(--subtext); grid-column: 1/-1; text-align:center; padding: 20px;">Nessun giocatore trovato con questi filtri.</div>`;
+            return;
+        }
+
+        list.sort((a, b) => a.returnG - b.returnG);
+
+        list.forEach(p => {
+            const logoUrl = typeof teamLogos !== 'undefined' ? teamLogos[p.team] : '';
+            let returnClass = '';
+            if (p.returnG > 10) returnClass = 'long';
+            else if (p.returnG > 5) returnClass = 'medium';
+
+            container.innerHTML += `
+                <div class="player-card">
+                    <div class="player-info">
+                        <div class="role-badge role-${p.role}">${p.role}</div>
+                        <div class="player-details">
+                            <span class="player-name">${p.name}</span>
+                            <span class="player-team">
+                                ${logoUrl ? `<img src="${logoUrl}" class="team-icon-sm" alt="${p.team}">` : ''}
+                                ${p.team}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="return-badge">
+                        <div class="return-label">Rientro</div>
+                        <div class="return-value ${returnClass}">Giornata ${p.returnG}</div>
+                    </div>
+                </div>
+            `;
         });
     }
 
