@@ -6,175 +6,201 @@
     <title>Griglia Portieri Pro 26/27</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0b0d17;
-            --card-bg: rgba(22, 27, 46, 0.7);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --accent: #00ff88;
-            --accent-glow: rgba(0, 255, 136, 0.25);
-            --text: #ffffff;
-            --subtext: #8b949e;
-            --easy: #00ff88;
-            --medium: #ffb700;
-            --hard: #ff3366;
-        }
-
-        * { box-sizing: border-box; transition: all 0.2s ease; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(0, 255, 136, 0.05) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(120, 80, 255, 0.05) 0px, transparent 50%);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container { max-width: 1000px; width: 100%; }
-
-        .header-title { text-align: center; margin-bottom: 30px; }
-        .header-title h1 {
-            font-size: 2rem; font-weight: 900; margin: 0 0 8px 0;
-            background: linear-gradient(135deg, #fff 30%, var(--subtext));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .header-title p { color: var(--subtext); margin: 0; font-size: 0.9rem; }
-
-        .selectors-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px; margin-bottom: 25px;
-        }
-
-        select {
-            appearance: none;
-            background-color: var(--card-bg);
-            backdrop-filter: blur(12px);
-            color: var(--text);
-            border: 1px solid var(--card-border);
-            padding: 14px 16px; border-radius: 12px;
-            font-size: 0.95rem; font-weight: 600; width: 100%; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-
-        .dashboard-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--card-border);
-            border-radius: 20px; padding: 25px;
-            display: grid; grid-template-columns: 180px 1fr;
-            gap: 20px; align-items: center; margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        @media (max-width: 600px) { .dashboard-card { grid-template-columns: 1fr; text-align: center; } }
-
-        .score-box {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-right: 1px solid var(--card-border); padding-right: 20px;
-        }
-
-        @media (max-width: 600px) { .score-box { border-right: none; border-bottom: 1px solid var(--card-border); padding-right: 0; padding-bottom: 20px; } }
-
-        .circle-score {
-            width: 100px; height: 100px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
-            border: 4px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-
-        .score-val { font-size: 2.2rem; font-weight: 900; color: var(--accent); line-height: 1; }
-        .score-max { font-size: 0.75rem; color: var(--subtext); margin-top: 4px; font-weight: 600; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border);
-            padding: 12px; border-radius: 12px; text-align: center;
-        }
-
-        .stat-num { font-size: 1.5rem; font-weight: 900; margin-bottom: 2px; }
-        .stat-num.easy { color: var(--easy); }
-        .stat-num.medium { color: var(--medium); }
-        .stat-num.hard { color: var(--hard); }
-        .stat-label { font-size: 0.75rem; color: var(--subtext); text-transform: uppercase; font-weight: 700; }
-
-        .matrix-container {
-            background: var(--card-bg); backdrop-filter: blur(16px);
-            border-radius: 20px; padding: 20px; border: 1px solid var(--card-border);
-            margin-bottom: 25px; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .matrix {
-            display: grid;
-            grid-template-columns: 90px repeat(38, 62px);
-            gap: 6px; align-items: center;
-        }
-
-        .cell {
-            height: 46px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            border-radius: 8px; font-size: 0.7rem; font-weight: 700;
-            background: rgba(255, 255, 255, 0.03); border: 1px solid transparent;
-        }
-
-        .cell.header { background: transparent; color: var(--subtext); font-size: 0.7rem; text-transform: uppercase; }
-        .cell.team-name { font-weight: 900; font-size: 0.85rem; color: #fff; background: rgba(255,255,255,0.05); gap: 3px; }
-
-        .cell.easy-bg { background: rgba(0, 255, 136, 0.12); color: var(--easy); border-color: rgba(0, 255, 136, 0.2); }
-        .cell.medium-bg { background: rgba(255, 183, 0, 0.12); color: var(--medium); border-color: rgba(255, 183, 0, 0.2); }
-        .cell.hard-bg { background: rgba(255, 51, 102, 0.12); color: var(--hard); border-color: rgba(255, 51, 102, 0.2); }
-
-        .cell.best {
-            transform: scale(1.05); box-shadow: 0 0 12px rgba(255,255,255,0.2);
-            border: 2px solid #fff !important; z-index: 2;
-        }
-
-        .cell .badge { font-size: 0.55rem; opacity: 0.7; margin-bottom: 1px; }
-
-        .match-info { display: flex; align-items: center; gap: 4px; }
-        .team-icon { width: 14px; height: 14px; object-fit: contain; }
-        .header-icon { width: 18px; height: 18px; object-fit: contain; }
-
-        .save-section { display: flex; gap: 12px; margin-bottom: 25px; }
-
-        input[type="text"] {
-            flex: 1; background: var(--card-bg); border: 1px solid var(--card-border);
-            color: #fff; padding: 14px 18px; border-radius: 12px; font-size: 0.95rem; outline: none;
-        }
-
-        button.btn-primary {
-            background: var(--accent); color: #000; border: none; padding: 0 25px;
-            border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer;
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
-
-        .saved-card {
-            background: var(--card-bg); backdrop-filter: blur(16px);
-            border-radius: 20px; padding: 20px; border: 1px solid var(--card-border);
-        }
-
-        .saved-card h3 { margin: 0 0 15px 0; font-size: 1.1rem; color: var(--subtext); }
-
-        .saved-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 16px; background: rgba(255,255,255,0.02);
-            border: 1px solid var(--card-border); border-radius: 10px; margin-bottom: 8px;
-        }
-
-        .btn-delete {
-            background: rgba(255, 51, 102, 0.15); color: var(--hard);
-            border: 1px solid rgba(255, 51, 102, 0.3); padding: 6px 12px;
-            border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer;
-        }
+           :root {
+                --bg-main: #0b0f19;
+                --bg-card: #151c2c;
+                --bg-header: #1e293b;
+                --border-color: rgba(255, 255, 255, 0.08);
+                --text-primary: #f8fafc;
+                --text-muted: #94a3b8;
+            
+                /* Colori Difficoltà Soft/Modern */
+                --easy-bg: #064e3b;
+                --easy-text: #6ee7b7;
+            
+                --medium-bg: #78350f;
+                --medium-text: #fde68a;
+            
+                --hard-bg: #7f1d1d;
+                --hard-text: #fca5a5;
+        
+                --accent-blue: #3b82f6;
+                --accent-glow: rgba(59, 130, 246, 0.2);
+            }
+        
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            }
+        
+            body {
+                background-color: var(--bg-main);
+                color: var(--text-primary);
+                padding: 2rem;
+                min-height: 100vh;
+            }
+        
+            /* Header & Container */
+            .dashboard-header {
+                margin-bottom: 2rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+        
+            h1 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                letter-spacing: -0.02em;
+                color: var(--text-primary);
+            }
+        
+            .subtitle {
+                font-size: 0.875rem;
+                color: var(--text-muted);
+                margin-top: 0.25rem;
+            }
+        
+            .card {
+                background: var(--bg-card);
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                padding: 1.5rem;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            }
+            
+            /* Griglia Calendario */
+            .grid-container {
+                overflow-x: auto;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+            }
+        
+            #matrix {
+                display: grid;
+                grid-template-columns: 140px repeat(38, minmax(65px, 1fr));
+                gap: 1px;
+                background-color: var(--border-color);
+            }
+            
+            /* Celle della tabella */
+            .cell {
+                background-color: var(--bg-card);
+                padding: 10px 6px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 500;
+                position: relative;
+                transition: background-color 0.15s ease;
+            }
+            
+            .cell.header {
+                background-color: var(--bg-header);
+                color: var(--text-muted);
+                font-weight: 600;
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            
+            .cell.team-name {
+                background-color: var(--bg-header);
+                font-weight: 600;
+                color: var(--text-primary);
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 8px;
+                padding-left: 12px;
+                position: sticky;
+                left: 0;
+                z-index: 2;
+                border-right: 1px solid var(--border-color);
+            }
+            
+            /* Icone Loghi */
+            .header-icon {
+                width: 22px;
+                height: 22px;
+                object-fit: contain;
+            }
+            
+            .team-icon {
+                width: 16px;
+                height: 16px;
+                object-fit: contain;
+                margin-bottom: 2px;
+            }
+            
+            /* Badge Difficoltà (Pillole Clean) */
+            .cell.easy-bg {
+                background-color: var(--easy-bg);
+                color: var(--easy-text);
+            }
+            
+            .cell.medium-bg {
+                background-color: var(--medium-bg);
+                color: var(--medium-text);
+            }
+            
+            .cell.hard-bg {
+                background-color: var(--hard-bg);
+                color: var(--hard-text);
+            }
+            
+            /* Indicatore di Best Pick (Miglior portiere da schierare) */
+            .cell.best {
+                outline: 2px solid var(--accent-blue);
+                outline-offset: -2px;
+                z-index: 1;
+            }
+            
+            .cell.best::after {
+                content: '';
+                position: absolute;
+                top: 3px;
+                right: 3px;
+                width: 5px;
+                height: 5px;
+                background-color: var(--accent-blue);
+                border-radius: 50%;
+            }
+            
+            /* Casa/Fuori Badge */
+            .badge {
+                font-size: 0.6rem;
+                font-weight: 700;
+                opacity: 0.6;
+                margin-bottom: 1px;
+            }
+            
+            .match-info {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            /* Scrollbar Minimal */
+            ::-webkit-scrollbar {
+                height: 8px;
+            }
+            
+            ::-webkit-scrollbar-track {
+                background: var(--bg-main);
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background: #334155;
+                border-radius: 4px;
+            }
+            
+            ::-webkit-scrollbar-thumb:hover {
+                background: #475569;
+            }
     </style>
 </head>
 <body>
