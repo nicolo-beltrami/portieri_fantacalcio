@@ -115,7 +115,7 @@
 
         .matrix {
             display: grid;
-            grid-template-columns: 70px repeat(38, 50px);
+            grid-template-columns: 70px repeat(38, 55px);
             gap: 5px;
             align-items: center;
             font-size: 0.75rem;
@@ -236,10 +236,10 @@
 </div>
 
 <script>
-    // Squadre di Serie A 26/27
-    const teams = ["ROM", "INT", "JUV", "MIL", "ATA", "NAP", "COM", "LAZ", "FIO", "TOR", "BOL", "UDI", "CAG", "SAS", "GEN", "PAR", "FRO", "MON", "LEC", "VEN"];
+    // Squadre Serie A 26/27
+    const teams = ["ATA", "BOL", "CAG", "COM", "FIO", "FRO", "GEN", "INT", "JUV", "LAZ", "LEC", "MIL", "MON", "NAP", "PAR", "ROM", "SAS", "TOR", "UDI", "VEN"];
     
-    // Mappa dettagliata delle 8 Fasce
+    // Mappa 8 Fasce di forza
     const teamTiers = {
         "ROM": 1, "INT": 1,
         "JUV": 2, "MIL": 2,
@@ -251,42 +251,124 @@
         "MON": 8, "LEC": 8, "VEN": 8
     };
 
-    // Algoritmo di confronto relativo tra le 8 fasce
-    function getMatchDifficulty(myTeam, opponent, isHome) {
+    // Calendario Reale Serie A 2026/2027 (G1 - G38)
+    const rawMatches = [
+        // G1
+        ["ATA","SAS"], ["BOL","LAZ"], ["FRO","JUV"], ["GEN","NAP"], ["INT","MON"], ["PAR","CAG"], ["ROM","FIO"], ["TOR","MIL"], ["UDI","COM"], ["VEN","LEC"],
+        // G2
+        ["ATA","BOL"], ["CAG","INT"], ["FIO","FRO"], ["JUV","PAR"], ["LAZ","GEN"], ["LEC","ROM"], ["MIL","VEN"], ["MON","UDI"], ["NAP","COM"], ["SAS","TOR"],
+        // G3
+        ["BOL","SAS"], ["CAG","LEC"], ["FIO","TOR"], ["FRO","VEN"], ["GEN","COM"], ["INT","NAP"], ["JUV","MIL"], ["PAR","MON"], ["ROM","ATA"], ["UDI","LAZ"],
+        // G4
+        ["ATA","CAG"], ["COM","PAR"], ["GEN","FRO"], ["INT","UDI"], ["LAZ","MIL"], ["LEC","MON"], ["NAP","BOL"], ["SAS","JUV"], ["TOR","ROM"], ["VEN","FIO"],
+        // G5
+        ["BOL","TOR"], ["FIO","NAP"], ["FRO","COM"], ["JUV","ATA"], ["MIL","LEC"], ["MON","SAS"], ["PAR","GEN"], ["ROM","INT"], ["UDI","CAG"], ["VEN","LAZ"],
+        // G6
+        ["ATALANTA","VENEZIA"], ["CAGLIARI","JUVENTUS"], ["COMO","ROMA"], ["GENOA","FIORENTINA"], ["INTER","PARMA"], ["LAZIO","MONZA"], ["LECCE","BOLOGNA"], ["NAPOLI","FROSINONE"], ["SASSUOLO","MILAN"], ["TORINO","UDINESE"],
+        // G7
+        ["BOLOGNA","INTER"], ["FIORENTINA","COMO"], ["FROSINONE","SASSUOLO"], ["JUVENTUS","LAZIO"], ["MILAN","ATALANTA"], ["MONZA","CAGLIARI"], ["PARMA","TORINO"], ["ROMA","GENOA"], ["UDINESE","LECCE"], ["VENEZIA","NAPOLI"],
+        // G8
+        ["ATALANTA","FROSINONE"], ["CAGLIARI","BOLOGNA"], ["COMO","SASSUOLO"], ["GENOA","VENEZIA"], ["INTER","FIORENTINA"], ["LAZIO","PARMA"], ["LECCE","JUVENTUS"], ["NAPOLI","ROMA"], ["TORINO","MONZA"], ["UDINESE","MILAN"],
+        // G9
+        ["FIORENTINA","ATALANTA"], ["FROSINONE","LECCE"], ["GENOA","JUVENTUS"], ["MILAN","BOLOGNA"], ["MONZA","NAPOLI"], ["PARMA","UDINESE"], ["ROMA","CAGLIARI"], ["SASSUOLO","LAZIO"], ["TORINO","COMO"], ["VENEZIA","INTER"],
+        // G10
+        ["ATALANTA","PARMA"], ["BOLOGNA","MONZA"], ["COMO","VENEZIA"], ["FROSINONE","TORINO"], ["JUVENTUS","NAPOLI"], ["LAZIO","CAGLIARI"], ["LECCE","GENOA"], ["MILAN","INTER"], ["SASSUOLO","FIORENTINA"], ["UDINESE","ROMA"],
+        // G11
+        ["CAGLIARI","FROSINONE"], ["FIORENTINA","JUVENTUS"], ["GENOA","MILAN"], ["INTER","COMO"], ["MONZA","ATALANTA"], ["NAPOLI","LAZIO"], ["PARMA","BOLOGNA"], ["ROMA","SASSUOLO"], ["TORINO","LECCE"], ["VENEZIA","UDINESE"],
+        // G12
+        ["ATALANTA","INTER"], ["BOLOGNA","UDINESE"], ["COMO","CAGLIARI"], ["JUVENTUS","VENEZIA"], ["LAZIO","LECCE"], ["MILAN","FROSINONE"], ["MONZA","FIORENTINA"], ["NAPOLI","TORINO"], ["PARMA","ROMA"], ["SASSUOLO","GENOA"],
+        // G13
+        ["CAGLIARI","MILAN"], ["COMO","JUVENTUS"], ["FROSINONE","PARMA"], ["INTER","GENOA"], ["LECCE","ATALANTA"], ["ROMA","MONZA"], ["SASSUOLO","NAPOLI"], ["TORINO","LAZIO"], ["UDINESE","FIORENTINA"], ["VENEZIA","BOLOGNA"],
+        // G14
+        ["BOLOGNA","ROMA"], ["FIORENTINA","CAGLIARI"], ["FROSINONE","INTER"], ["GENOA","TORINO"], ["JUVENTUS","UDINESE"], ["LAZIO","ATALANTA"], ["MILAN","PARMA"], ["MONZA","COMO"], ["NAPOLI","LECCE"], ["VENEZIA","SASSUOLO"],
+        // G15
+        ["ATALANTA","GENOA"], ["CAGLIARI","VENEZIA"], ["COMO","BOLOGNA"], ["INTER","TORINO"], ["JUVENTUS","MONZA"], ["LAZIO","ROMA"], ["LECCE","SASSUOLO"], ["NAPOLI","MILAN"], ["PARMA","FIORENTINA"], ["UDINESE","FROSINONE"],
+        // G16
+        ["ATALANTA","NAPOLI"], ["FIORENTINA","BOLOGNA"], ["FROSINONE","LAZIO"], ["GENOA","UDINESE"], ["LECCE","INTER"], ["MILAN","COMO"], ["ROMA","JUVENTUS"], ["SASSUOLO","PARMA"], ["TORINO","CAGLIARI"], ["VENEZIA","MONZA"],
+        // G17
+        ["BOLOGNA","JUVENTUS"], ["CAGLIARI","GENOA"], ["COMO","LECCE"], ["FIORENTINA","LAZIO"], ["INTER","SASSUOLO"], ["MONZA","MILAN"], ["PARMA","NAPOLI"], ["ROMA","FROSINONE"], ["TORINO","VENEZIA"], ["UDINESE","ATALANTA"],
+        // G18
+        ["ATALANTA","COMO"], ["FROSINONE","BOLOGNA"], ["GENOA","MONZA"], ["JUVENTUS","TORINO"], ["LAZIO","INTER"], ["LECCE","PARMA"], ["MILAN","FIORENTINA"], ["NAPOLI","CAGLIARI"], ["SASSUOLO","UDINESE"], ["VENEZIA","ROMA"],
+        // G19
+        ["BOLOGNA","GENOA"], ["CAGLIARI","SASSUOLO"], ["COMO","LAZIO"], ["FIORENTINA","LECCE"], ["INTER","JUVENTUS"], ["MONZA","FROSINONE"], ["PARMA","VENEZIA"], ["ROMA","MILAN"], ["TORINO","ATALANTA"], ["UDINESE","NAPOLI"],
+        // G20
+        ["ATALANTA","ROMA"], ["CAGLIARI","COMO"], ["JUVENTUS","GENOA"], ["LAZIO","BOLOGNA"], ["LECCE","UDINESE"], ["MILAN","TORINO"], ["NAPOLI","FIORENTINA"], ["PARMA","INTER"], ["SASSUOLO","MONZA"], ["VENEZIA","FROSINONE"],
+        // G21
+        ["BOLOGNA","ATALANTA"], ["COMO","NAPOLI"], ["FIORENTINA","SASSUOLO"], ["FROSINONE","MILAN"], ["GENOA","PARMA"], ["INTER","VENEZIA"], ["JUVENTUS","CAGLIARI"], ["LECCE","TORINO"], ["MONZA","LAZIO"], ["ROMA","UDINESE"],
+        // G22
+        ["ATALANTA","FIORENTINA"], ["CAGLIARI","PARMA"], ["GENOA","LECCE"], ["LAZIO","VENEZIA"], ["MILAN","JUVENTUS"], ["MONZA","ROMA"], ["NAPOLI","INTER"], ["SASSUOLO","COMO"], ["TORINO","FROSINONE"], ["UDINESE","BOLOGNA"],
+        // G23
+        ["ATALANTA","LAZIO"], ["BOLOGNA","MILAN"], ["COMO","MONZA"], ["FIORENTINA","UDINESE"], ["INTER","CAGLIARI"], ["JUVENTUS","SASSUOLO"], ["LECCE","NAPOLI"], ["PARMA","FROSINONE"], ["ROMA","TORINO"], ["VENEZIA","GENOA"],
+        // G24
+        ["BOLOGNA","COMO"], ["CAGLIARI","LAZIO"], ["FROSINONE","FIORENTINA"], ["GENOA","ATALANTA"], ["INTER","MILAN"], ["MONZA","LECCE"], ["NAPOLI","JUVENTUS"], ["ROMA","PARMA"], ["TORINO","SASSUOLO"], ["UDINESE","VENEZIA"],
+        // G25
+        ["ATALANTA","MONZA"], ["COMO","TORINO"], ["FIORENTINA","INTER"], ["JUVENTUS","BOLOGNA"], ["LAZIO","NAPOLI"], ["LECCE","FROSINONE"], ["MILAN","GENOA"], ["SASSUOLO","ROMA"], ["UDINESE","PARMA"], ["VENEZIA","CAGLIARI"],
+        // G26
+        ["BOLOGNA","LECCE"], ["CAGLIARI","UDINESE"], ["COMO","MILAN"], ["FROSINONE","NAPOLI"], ["GENOA","LAZIO"], ["INTER","ATALANTA"], ["MONZA","JUVENTUS"], ["PARMA","SASSUOLO"], ["ROMA","VENEZIA"], ["TORINO","FIORENTINA"],
+        // G27
+        ["ATALANTA","TORINO"], ["FIORENTINA","VENEZIA"], ["JUVENTUS","ROMA"], ["LAZIO","FROSINONE"], ["LECCE","COMO"], ["MILAN","CAGLIARI"], ["MONZA","GENOA"], ["NAPOLI","PARMA"], ["SASSUOLO","BOLOGNA"], ["UDINESE","INTER"],
+        // G28
+        ["BOLOGNA","NAPOLI"], ["CAGLIARI","FIORENTINA"], ["COMO","UDINESE"], ["FROSINONE","MONZA"], ["GENOA","ROMA"], ["LAZIO","JUVENTUS"], ["MILAN","SASSUOLO"], ["PARMA","LECCE"], ["TORINO","INTER"], ["VENEZIA","ATALANTA"],
+        // G29
+        ["CAGLIARI","NAPOLI"], ["COMO","FIORENTINA"], ["FROSINONE","UDINESE"], ["GENOA","INTER"], ["LECCE","LAZIO"], ["MILAN","MONZA"], ["ROMA","BOLOGNA"], ["SASSUOLO","ATALANTA"], ["TORINO","JUVENTUS"], ["VENEZIA","PARMA"],
+        // G30
+        ["ATALANTA","MILAN"], ["FIORENTINA","GENOA"], ["INTER","FROSINONE"], ["JUVENTUS","COMO"], ["MONZA","BOLOGNA"], ["NAPOLI","VENEZIA"], ["PARMA","LAZIO"], ["ROMA","LECCE"], ["SASSUOLO","CAGLIARI"], ["UDINESE","TORINO"],
+        // G31
+        ["BOLOGNA","VENEZIA"], ["CAGLIARI","ATALANTA"], ["FIORENTINA","MILAN"], ["FROSINONE","GENOA"], ["INTER","ROMA"], ["JUVENTUS","LECCE"], ["LAZIO","TORINO"], ["NAPOLI","SASSUOLO"], ["PARMA","COMO"], ["UDINESE","MONZA"],
+        // G32
+        ["ATALANTA","UDINESE"], ["BOLOGNA","CAGLIARI"], ["COMO","FROSINONE"], ["FIORENTINA","PARMA"], ["MILAN","NAPOLI"], ["MONZA","INTER"], ["ROMA","LAZIO"], ["SASSUOLO","LECCE"], ["TORINO","GENOA"], ["VENEZIA","JUVENTUS"],
+        // G33
+        ["CAGLIARI","MONZA"], ["FROSINONE","ROMA"], ["GENOA","SASSUOLO"], ["INTER","BOLOGNA"], ["JUVENTUS","FIORENTINA"], ["LAZIO","COMO"], ["LECCE","MILAN"], ["NAPOLI","UDINESE"], ["PARMA","ATALANTA"], ["VENEZIA","TORINO"],
+        // G34
+        ["ATALANTA","JUVENTUS"], ["BOLOGNA","FIORENTINA"], ["COMO","INTER"], ["LECCE","CAGLIARI"], ["MILAN","LAZIO"], ["MONZA","VENEZIA"], ["ROMA","NAPOLI"], ["SASSUOLO","FROSINONE"], ["TORINO","PARMA"], ["UDINESE","GENOA"],
+        // G35
+        ["FIORENTINA","ROMA"], ["FROSINONE","ATALANTA"], ["GENOA","CAGLIARI"], ["INTER","LECCE"], ["LAZIO","SASSUOLO"], ["NAPOLI","MONZA"], ["PARMA","MILAN"], ["TORINO","BOLOGNA"], ["UDINESE","JUVENTUS"], ["VENEZIA","COMO"],
+        // G36
+        ["BOLOGNA","FROSINONE"], ["CAGLIARI","TORINO"], ["COMO","ATALANTA"], ["JUVENTUS","INTER"], ["LAZIO","UDINESE"], ["LECCE","FIORENTINA"], ["MILAN","ROMA"], ["MONZA","PARMA"], ["NAPOLI","GENOA"], ["SASSUOLO","VENEZIA"],
+        // G37
+        ["BOLOGNA","PARMA"], ["CAGLIARI","ROMA"], ["COMO","GENOA"], ["JUVENTUS","FROSINONE"], ["LAZIO","FIORENTINA"], ["LECCE","VENEZIA"], ["MILAN","UDINESE"], ["MONZA","TORINO"], ["NAPOLI","ATALANTA"], ["SASSUOLO","INTER"],
+        // G38
+        ["ATALANTA","LECCE"], ["FIORENTINA","MONZA"], ["FROSINONE","CAGLIARI"], ["GENOA","BOLOGNA"], ["INTER","LAZIO"], ["PARMA","JUVENTUS"], ["ROMA","COMO"], ["TORINO","NAPOLI"], ["UDINESE","SASSUOLO"], ["VENEZIA","MILAN"]
+    ];
+
+    // Helper per normalizzare i nomi
+    function normalize(name) {
+        return name.substring(0,3).toUpperCase();
+    }
+
+    // Costruzione della struttura calendario reale
+    const schedule = {};
+    teams.forEach(t => schedule[t] = []);
+
+    function getMatchDifficulty(myTeam, opponent) {
         const myTier = teamTiers[myTeam];
         const oppTier = teamTiers[opponent];
-
-        // 1. Stessa Fascia -> Partita MEDIA
-        if (myTier === oppTier) {
-            return 2; 
-        }
-
-        // 2. Avversario di Fascia INFERIORE (es. Tier mio 2, opp 5 -> 2 < 5) -> Partita FACILE
-        if (myTier < oppTier) {
-            return 3; 
-        }
-
-        // 3. Avversario di Fascia SUPERIORE (es. Tier mio 4, opp 1 -> 4 > 1) -> Partita DIFFICILE
-        if (myTier > oppTier) {
-            return 1; 
-        }
-
+        if (myTier === oppTier) return 2;
+        if (myTier < oppTier) return 3; // Facile
+        if (myTier > oppTier) return 1; // Difficile
         return 2;
     }
 
-    // Struttura Calendario Stagione 26/27
-    const schedule = {};
-    teams.forEach(team => {
-        schedule[team] = [];
-        for(let g=1; g<=38; g++) {
-            const oppIndex = (teams.indexOf(team) + g) % teams.length;
-            const opponent = teams[oppIndex] === team ? teams[(oppIndex + 1) % teams.length] : teams[oppIndex];
-            const isHome = (g + teams.indexOf(team)) % 2 === 0;
-            const diff = getMatchDifficulty(team, opponent, isHome);
-            
-            schedule[team].push({ opponent, home: isHome, diff: diff });
+    // Popolamento del calendario reale
+    for (let i = 0; i < rawMatches.length; i++) {
+        const home = normalize(rawMatches[i][0]);
+        const away = normalize(rawMatches[i][1]);
+
+        if (schedule[home]) {
+            schedule[home].push({
+                opponent: away,
+                home: true,
+                diff: getMatchDifficulty(home, away)
+            });
         }
-    });
+        if (schedule[away]) {
+            schedule[away].push({
+                opponent: home,
+                home: false,
+                diff: getMatchDifficulty(away, home)
+            });
+        }
+    }
 
     function initSelectors() {
         const selects = [document.getElementById('team1'), document.getElementById('team2'), document.getElementById('team3')];
@@ -317,11 +399,12 @@
 
             selected.forEach(t => {
                 const match = schedule[t][g];
-                // Punteggio: Valore difficoltà + bonus casa (+0.2)
-                let val = match.diff + (match.home ? 0.2 : 0);
-                if(val > bestVal) {
-                    bestVal = val;
-                    bestTeam = t;
+                if(match) {
+                    let val = match.diff + (match.home ? 0.2 : 0);
+                    if(val > bestVal) {
+                        bestVal = val;
+                        bestTeam = t;
+                    }
                 }
             });
 
@@ -335,7 +418,6 @@
             totalScore += bestVal;
         }
 
-        // Calcolo Score finale in percentuale
         const finalScore = Math.min(100, Math.round((totalScore / (38 * 3.2)) * 100));
 
         document.getElementById('scoreVal').innerText = finalScore;
