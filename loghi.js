@@ -1,0 +1,22 @@
+const teamLogos = {
+    "ATA": "https://upload.wikimedia.org/wikipedia/it/2/28/Atalanta_BC_logo.svg",
+    "BOL": "https://upload.wikimedia.org/wikipedia/it/5/53/Bologna_FC_1909_logo.svg",
+    "CAG": "https://upload.wikimedia.org/wikipedia/it/8/8d/Cagliari_Calcio_2015.svg",
+    "COM": "https://upload.wikimedia.org/wikipedia/it/1/1c/Como_1907_logo.svg",
+    "FIO": "https://upload.wikimedia.org/wikipedia/commons/7/79/ACF_Fiorentina_2022.svg",
+    "FRO": "https://upload.wikimedia.org/wikipedia/it/0/04/Frosinone_Calcio_logo.svg",
+    "GEN": "https://upload.wikimedia.org/wikipedia/it/a/a2/Genoa_cfc.svg",
+    "INT": "https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg",
+    "JUV": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg",
+    "LAZ": "https://upload.wikimedia.org/wikipedia/it/3/3d/SS_Lazio_logo.svg",
+    "LEC": "https://upload.wikimedia.org/wikipedia/it/a/a7/US_Lecce_logo.svg",
+    "MIL": "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg",
+    "MON": "https://upload.wikimedia.org/wikipedia/it/2/2f/AC_Monza_logo.svg",
+    "NAP": "https://upload.wikimedia.org/wikipedia/commons/b/b5/SSC_Napoli_2024.svg",
+    "PAR": "https://upload.wikimedia.org/wikipedia/it/9/9c/Parma_Calcio_1913.svg",
+    "ROM": "https://upload.wikimedia.org/wikipedia/it/0/00/AS_Roma_Logo_2017.svg",
+    "SAS": "https://upload.wikimedia.org/wikipedia/it/1/1c/US_Sassuolo_Calcio.svg",
+    "TOR": "https://upload.wikimedia.org/wikipedia/it/2/2e/Torino_FC_logo.svg",
+    "UDI": "https://upload.wikimedia.org/wikipedia/it/c/ce/Udinese_Calcio_logo.svg",
+    "VEN": "https://upload.wikimedia.org/wikipedia/it/0/02/Venezia_FC_logo_2022.svg"
+};
